@@ -15,7 +15,7 @@ input[type="submit"] {
 }
 input[type="text"]:first-child {
   padding-right: 100px;
-  width: 1300px;
+  width: 700px;
   height: 20px;
   font-size: 10px;
   border-radius: 4px;
@@ -42,6 +42,10 @@ i:last-child {
   float: right;
 }
 
+textarea:disabled {
+  background-color: lightyellow;
+  border: none;
+}
 
 .note {
   background-color: lightyellow;

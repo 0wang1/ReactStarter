@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Immutable from 'immutable';
 import Note from './note';
 import InputBar from './input_bar';
+import firebase from '../firebase';
 
 let z = 0;
 class App extends Component {
@@ -15,7 +16,7 @@ class App extends Component {
     this.renderNotes = this.renderNotes.bind(this);
     this.updateNotes = this.updateNotes.bind(this);
   }
-  // Default note is created with these attributes
+  // Default note is created with these properties
   createNote(title) {
     return {
       title,
@@ -27,16 +28,14 @@ class App extends Component {
   }
   // updates with position (x,y,zIndex), and editing of the note
   updateNotes(id, fields) {
-    this.setState({
-      notes: this.state.notes.update(id, (n) => { return Object.assign({}, n, fields); }),
-    });
+    firebase.updateNotes(id, fields);
   }
   // maps through and displays all the notes
   renderNotes() {
     if (this.state.notes.size > 0) {
       return this.state.notes.entrySeq().map(([key, value]) =>
         <Note note={value} id={key} key={key} onUpdate={this.updateNotes}
-          onDelete={(id) => { this.setState({ notes: this.state.notes.delete(id) }); }}
+          onDelete={(id) => { firebase.deleteNote(id); }}
         />);
     } else {
       return false;
