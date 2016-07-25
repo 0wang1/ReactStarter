@@ -50,7 +50,7 @@ class Note extends Component {
 
   noteBody() {
     if (this.state.isEditing) {
-      return <textarea id="textspace" onChange={this.onTextChange} />;
+      return <textarea id="textspace" value={this.props.note.text} onChange={this.onTextChange} />;
     } else {
       return <div className="noteBody" dangerouslySetInnerHTML={{ __html: marked(this.props.note.text || '') }} />;
     }

@@ -7,16 +7,22 @@ const config = {
   databaseURL: 'https://reactstarter-7f739.firebaseio.com',
   storageBucket: 'reactstarter-7f739.appspot.com',
 };
+
 firebase.initializeApp(config);
 
 const database = firebase.database().ref('notes');
 
+// callback is a function
+export function subscribeNotes(callback) {
+  database.on('value', (snapshot) => {
+    const data = snapshot.val();
+    callback(data);
+  });
+}
 
-// export function fetchNotes(callback) {
-//   database.ref('notes').on('value', (snapshot) => {
-//     let data = snapshot.val();
-//   });
-// }
+export function createNotes(note) {
+  database.push(note);
+}
 
 export function deleteNote(id) {
   database.child(id).remove();

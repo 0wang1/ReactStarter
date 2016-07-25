@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Immutable from 'immutable';
 import Note from './note';
 import InputBar from './input_bar';
+import * as firebasedb from '../firebasedb';
 
 let z = 0;
 class App extends Component {
@@ -11,11 +12,16 @@ class App extends Component {
     this.state = {
       notes: Immutable.Map(),
     };
+
+    firebasedb.subscribeNotes((newNotes) => {
+      this.setState({
+        notes: Immutable.Map(newNotes),
+      });
+    });
     this.createNote = this.createNote.bind(this);
     this.renderNotes = this.renderNotes.bind(this);
-    this.updateNotes = this.updateNotes.bind(this);
   }
-  // Default note is created with these attributes
+  // Default note is created with these properties
   createNote(title) {
     return {
       title,
@@ -25,18 +31,13 @@ class App extends Component {
       zIndex: z++,
     };
   }
-  // updates with position (x,y,zIndex), and editing of the note
-  updateNotes(id, fields) {
-    this.setState({
-      notes: this.state.notes.update(id, (n) => { return Object.assign({}, n, fields); }),
-    });
-  }
-  // maps through and displays all the notes
+
   renderNotes() {
     if (this.state.notes.size > 0) {
       return this.state.notes.entrySeq().map(([key, value]) =>
-        <Note note={value} id={key} key={key} onUpdate={this.updateNotes}
-          onDelete={(id) => { this.setState({ notes: this.state.notes.delete(id) }); }}
+        <Note note={value} id={key} key={key}
+          onUpdate={(id, fields) => { firebasedb.updateNotes(id, fields); }}
+          onDelete={(id) => { firebasedb.deleteNote(id); }}
         />);
     } else {
       return false;
@@ -46,9 +47,7 @@ class App extends Component {
     return (
       <div>
         <InputBar onSubmit={(text) => {
-          this.setState({
-            notes: this.state.notes.set(Math.random(), this.createNote(text)),
-          });
+          firebasedb.createNotes(this.createNote(text));
         }} />
         {this.renderNotes()}
       </div>
